@@ -1,142 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soundboard</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 2rem;
-      background-size: cover;
-      background-position: center;
+<script>
+  let currentAudio = null;
+
+  const sounds = [
+    "sound1.mp3",
+    "sound2.mp3",
+    "sound3.mp3",
+    "sound4.mp3",
+    "sound5.mp3",
+    "placeholder6.mp3",
+    "placeholder7.mp3",
+    "placeholder8.mp3",
+    "placeholder9.mp3"
+  ];
+
+  const alarmSound = "placeholder_alarm.mp3";
+  const chaosBackground = "chaos_background.png";
+
+  function playSound(index) {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
     }
-    h1 {
-      margin-bottom: 2rem;
-      color: #00ffcc;
-    }
-    .soundboard {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 1rem;
-      width: 100%;
-      max-width: 800px;
-    }
-    .sound-button, .control-button {
-      background-color: #1e1e1e;
-      border: 2px solid #00ffcc;
-      padding: 0.75rem;
-      border-radius: 10px;
-      cursor: pointer;
-      text-align: center;
-      transition: 0.2s ease;
-    }
-    .sound-button:hover, .control-button:hover {
-      background-color: #00ffcc;
-      color: #000;
-    }
-    .controls {
-      margin-top: 1rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-    input[type="range"] {
-      width: 150px;
-    }
-  </style>
-</head>
-<body>
-  <h1>🎧 Soundboard</h1>
 
-  <div class="soundboard">
-    <div class="sound-button" onclick="playSound(0)">Sound 1</div>
-    <div class="sound-button" onclick="playSound(1)">Sound 2</div>
-    <div class="sound-button" onclick="playSound(2)">Sound 3</div>
-    <div class="sound-button" onclick="playSound(3)">Sound 4</div>
-    <div class="sound-button" onclick="playSound(4)">Sound 5</div>
-    <div class="sound-button" onclick="playSound(5)">New KEM Sound</div>
-    <div class="sound-button" onclick="playSound(6)">Sound 7</div>
-    <div class="sound-button" onclick="playSound(7)">Sound 8</div>
-    <div class="sound-button" onclick="playSound(8)">Goober Sound</div>
-  </div>
+    const audio = new Audio(sounds[index]);
+    audio.volume = document.getElementById("volumeSlider").value;
 
-  <div class="controls">
-    <button class="control-button" onclick="stopAllSounds()">Stop</button>
-    <input type="range" min="0" max="1" step="0.01" value="1" id="volumeSlider" onchange="changeVolume(this.value)">
-  </div>
-
-  <script>
-    let currentAudio = null;
-
-    const sounds = [
-      "sound1.mp3",
-      "sound2.mp3",
-      "sound3.mp3",
-      "sound4.mp3",
-      "sound5.mp3",
-      "youtube_kem5AfOws9Y_audio.mp3",
-      "sound 7.mp3",
-      "youtube_3gCBFKHVJVA_audio.mp3",
-      "reddit_xxx_goober_xxx_1k37csw_audio.mp3"
-    ];
-
-    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3";
-    const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png";
-
-    function playSound(index) {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-      }
-
-      const audio = new Audio(sounds[index]);
-      audio.volume = document.getElementById("volumeSlider").value;
-
-      if (index === 8) { // Special handling for Goober clip
-        audio.addEventListener('loadedmetadata', () => {
-          audio.currentTime = 270; // 4:30
-          audio.play();
-          setTimeout(() => {
-            audio.pause();
-          }, 8000); // 8 seconds to reach 4:38
-        });
-      } else {
+    if (index === 8) {
+      audio.addEventListener('loadedmetadata', () => {
+        audio.currentTime = 270;
         audio.play();
-      }
-
-      currentAudio = audio;
+        setTimeout(() => {
+          audio.pause();
+        }, 8000);
+      });
+    } else {
+      audio.play();
     }
 
-    function stopAllSounds() {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-      }
-    }
+    currentAudio = audio;
+  }
 
-    function changeVolume(volume) {
-      if (currentAudio) {
-        currentAudio.volume = volume;
-      }
+  function stopAllSounds() {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
     }
+  }
 
-    window.onload = function () {
-      const chance = Math.floor(Math.random() * 30) + 1; // 30/1 chaos chance
-      if (chance === 1) {
-        document.body.style.backgroundImage = `url('${chaosBackground}')`;
-        const alarm = new Audio(alarmSound);
-        alarm.loop = true;
-        alarm.volume = 1.0;
-        alarm.play();
-      }
-    };
-  </script>
-</body>
-</html>
+  function changeVolume(volume) {
+    if (currentAudio) {
+      currentAudio.volume = volume;
+    }
+  }
+
+  window.onload = function () {
+    const chance = Math.floor(Math.random() * 30) + 1;
+    if (chance === 1) {
+      document.body.style.backgroundImage = `url('${chaosBackground}')`;
+      const alarm = new Audio(alarmSound);
+      alarm.loop = true;
+      alarm.volume = 1.0;
+      alarm.play();
+
+      // Show IP Address
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          const ipDisplay = document.createElement('div');
+          ipDisplay.textContent = `Your IP Address: ${data.ip}`;
+          ipDisplay.style.marginTop = '20px';
+          ipDisplay.style.padding = '10px';
+          ipDisplay.style.backgroundColor = '#ff0000';
+          ipDisplay.style.color = '#ffffff';
+          ipDisplay.style.border = '2px solid #ffffff';
+          ipDisplay.style.borderRadius = '10px';
+          ipDisplay.style.fontSize = '18px';
+          ipDisplay.style.fontFamily = "Calibri, sans-serif";
+          ipDisplay.style.zIndex = "9999";
+          ipDisplay.style.textAlign = "center";
+          ipDisplay.style.position = "fixed";
+          ipDisplay.style.top = "20px";
+          ipDisplay.style.left = "50%";
+          ipDisplay.style.transform = "translateX(-50%)";
+          document.body.appendChild(ipDisplay);
+        })
+        .catch(error => {
+          console.error('Failed to fetch IP address:', error);
+        });
+
+      // Chaos Arabic Text
+      setInterval(() => {
+        const arabicText = document.createElement('div');
+        arabicText.textContent = "نحن قادمون ، استعد لوصولنا."; // YOUR phrase
+        arabicText.style.position = "fixed";
+        arabicText.style.left = Math.random() * window.innerWidth + "px";
+        arabicText.style.top = Math.random() * window.innerHeight + "px";
+        arabicText.style.color = "red";
+        arabicText.style.fontSize = "30px";
+        arabicText.style.fontWeight = "bold";
+        arabicText.style.zIndex = "10000";
+        arabicText.style.animation = "flash 0.5s infinite alternate";
+        arabicText.style.fontFamily = "Arial, sans-serif";
+        document.body.appendChild(arabicText);
+
+        setTimeout(() => {
+          arabicText.remove();
+        }, 3000);
+
+      }, 500);
+
+      // Add flash animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes flash {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  };
+</script>
