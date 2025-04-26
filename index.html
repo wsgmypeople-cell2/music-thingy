@@ -1,1 +1,75 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soundboard</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    h1 {
+      margin-bottom: 2rem;
+      color: #00ffcc;
+    }
+
+    .soundboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .sound-button {
+      background-color: #1e1e1e;
+      border: 2px solid #00ffcc;
+      padding: 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      text-align: center;
+    }
+
+    .sound-button:hover {
+      background-color: #00ffcc;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎧 Soundboard</h1>
+  <div class="soundboard">
+    <div class="sound-button" onclick="playSound(0)">Sound 1</div>
+    <div class="sound-button" onclick="playSound(1)">Sound 2</div>
+    <div class="sound-button" onclick="playSound(2)">Sound 3</div>
+    <div class="sound-button" onclick="playSound(3)">Sound 4</div>
+    <div class="sound-button" onclick="playSound(4)">Sound 5</div>
+  </div>
+
+  <script>
+    const sounds = [
+      "https://drive.google.com/uc?export=download&id=1tYR-aYLeAQ0RA4FXjpmQi9Y38N4kQpUZ",
+      "https://drive.google.com/uc?export=download&id=1pvNV-boViebw9BKZHxuRFczZaO9kd-B4",
+      "https://drive.google.com/uc?export=download&id=1qZpMk8rfD3HY-roJEeqo_OWLPr7t1H2i",
+      "https://drive.google.com/uc?export=download&id=136Pp1Um1g6JBm9x5ug8y1i4uZ7pYOUvf",
+      "https://drive.google.com/uc?export=download&id=1ZshR8b-lA5njtkJgA8kjnkKorZm57P5K"
+    ];
+
+    function playSound(index) {
+      const audio = new Audio(sounds[index]);
+      audio.play();
+    }
+  </script>
+</body>
+</html>
