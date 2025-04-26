@@ -57,7 +57,7 @@
     <div class="sound-button" onclick="playSound(3)">Sound 4</div>
     <div class="sound-button" onclick="playSound(4)">Sound 5</div>
     <div class="sound-button" onclick="playSound(5)">New KEM Sound</div>
-    <div class="sound-button" onclick="playSound(6)">Sound 7</div> <!-- NEW BUTTON -->
+    <div class="sound-button" onclick="playSound(6)">Sound 7</div> <!-- Fixed -->
   </div>
 
   <script>
@@ -67,12 +67,12 @@
       "sound3.mp3",
       "sound4.mp3",
       "sound5.mp3",
-      "youtube_kem5AfOws9Y_audio.mp3", // New KEM sound
-      "sound7.mp3" // New Sound 7
+      "youtube_kem5AfOws9Y_audio.mp3", // KEM
+      "sound 7.mp3" // Space included
     ];
 
-    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3"; // alarm sound
-    const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png"; // chaos mode background image
+    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3"; // Alarm
+    const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png"; // Crying man image
 
     function playSound(index) {
       const audio = new Audio(sounds[index]);
@@ -80,7 +80,7 @@
     }
 
     // Chaos mode (1/100 chance)
-    window.onload = function() {
+    window.onload = function () {
       const chance = Math.floor(Math.random() * 100) + 1;
       if (chance === 1) {
         document.body.style.backgroundImage = `url('${chaosBackground}')`;
@@ -89,7 +89,7 @@
         alarm.volume = 1.0;
         alarm.play();
       }
-    }
+    };
   </script>
 </body>
 </html>
