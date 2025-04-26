@@ -93,6 +93,7 @@
 
   <script>
     let currentAudio = null;
+    let chaosModeActivated = false;
 
     const sounds = [
       "sound1.mp3",
@@ -146,41 +147,54 @@
       }
     }
 
+    function triggerChaosMode() {
+      if (chaosModeActivated) return;
+      chaosModeActivated = true;
+
+      document.body.style.backgroundImage = `url('${chaosBackground}')`;
+
+      const alarm = new Audio(alarmSound);
+      alarm.loop = true;
+      alarm.volume = 1.0;
+      alarm.play();
+
+      setInterval(() => {
+        const chaosText = document.createElement('div');
+        chaosText.className = 'chaos-text';
+        chaosText.innerText = "نحن قادمون ، استعد لوصولنا.";
+        document.body.appendChild(chaosText);
+        setTimeout(() => {
+          chaosText.remove();
+        }, 1000);
+      }, 1500);
+
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          const ipText = document.createElement('div');
+          ipText.className = 'chaos-text';
+          ipText.style.top = "auto";
+          ipText.style.bottom = "20px";
+          ipText.style.fontSize = "2rem";
+          ipText.style.color = "white";
+          ipText.innerText = `Your IP: ${data.ip}`;
+          document.body.appendChild(ipText);
+        });
+    }
+
     window.onload = function () {
       const chance = Math.floor(Math.random() * 30) + 1;
       if (chance === 1) {
-        document.body.style.backgroundImage = `url('${chaosBackground}')`;
-        const alarm = new Audio(alarmSound);
-        alarm.loop = true;
-        alarm.volume = 1.0;
-        alarm.play();
-
-        // Flashing Arabic Text
-        setInterval(() => {
-          const chaosText = document.createElement('div');
-          chaosText.className = 'chaos-text';
-          chaosText.innerText = "نحن قادمون ، استعد لوصولنا.";
-          document.body.appendChild(chaosText);
-          setTimeout(() => {
-            chaosText.remove();
-          }, 1000);
-        }, 1500);
-
-        // Show IP
-        fetch('https://api.ipify.org?format=json')
-          .then(response => response.json())
-          .then(data => {
-            const ipText = document.createElement('div');
-            ipText.className = 'chaos-text';
-            ipText.style.top = "auto";
-            ipText.style.bottom = "20px";
-            ipText.style.fontSize = "2rem";
-            ipText.style.color = "white";
-            ipText.innerText = `Your IP: ${data.ip}`;
-            document.body.appendChild(ipText);
-          });
+        triggerChaosMode();
       }
     };
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === "'") { 
+        triggerChaosMode();
+      }
+    });
   </script>
 </body>
 </html>
+
