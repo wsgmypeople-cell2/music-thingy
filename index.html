@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soundboard</title>
+  <title>Untitled Sound Board</title>
   <style>
     body {
       background-color: #121212;
       color: #ffffff;
-      font-family: Arial, sans-serif;
+      font-family: Calibri, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -16,6 +16,7 @@
       padding: 2rem;
       background-size: cover;
       background-position: center;
+      overflow-x: hidden;
     }
     h1 {
       margin-bottom: 2rem;
@@ -50,15 +51,28 @@
     input[type="range"] {
       width: 150px;
     }
+    .chaos-text {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3rem;
+      color: red;
+      font-weight: bold;
+      font-family: Calibri, sans-serif;
+      animation: flash 0.5s infinite alternate;
+      z-index: 9999;
+      text-align: center;
+      white-space: nowrap;
+    }
     @keyframes flash {
       from { opacity: 1; }
       to { opacity: 0; }
     }
   </style>
 </head>
-
 <body>
-  <h1>🎧 Soundboard</h1>
+  <h1>🎧 Untitled Sound Board</h1>
 
   <div class="soundboard">
     <div class="sound-button" onclick="playSound(0)">Sound 1</div>
@@ -66,10 +80,10 @@
     <div class="sound-button" onclick="playSound(2)">Sound 3</div>
     <div class="sound-button" onclick="playSound(3)">Sound 4</div>
     <div class="sound-button" onclick="playSound(4)">Sound 5</div>
-    <div class="sound-button" onclick="playSound(5)">Sound 6</div>
+    <div class="sound-button" onclick="playSound(5)">New KEM Sound</div>
     <div class="sound-button" onclick="playSound(6)">Sound 7</div>
     <div class="sound-button" onclick="playSound(7)">Sound 8</div>
-    <div class="sound-button" onclick="playSound(8)">Sound 9</div>
+    <div class="sound-button" onclick="playSound(8)">Goober Sound</div>
   </div>
 
   <div class="controls">
@@ -86,14 +100,14 @@
       "sound3.mp3",
       "sound4.mp3",
       "sound5.mp3",
-      "placeholder6.mp3",
-      "placeholder7.mp3",
-      "placeholder8.mp3",
-      "placeholder9.mp3"
+      "youtube_kem5AfOws9Y_audio.mp3",
+      "sound 7.mp3",
+      "youtube_3gCBFKHVJVA_audio.mp3",
+      "reddit_xxx_goober_xxx_1k37csw_audio.mp3"
     ];
 
-    const alarmSound = "placeholder_alarm.mp3";
-    const chaosBackground = "chaos_background.png";
+    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3";
+    const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png";
 
     function playSound(index) {
       if (currentAudio) {
@@ -104,7 +118,7 @@
       const audio = new Audio(sounds[index]);
       audio.volume = document.getElementById("volumeSlider").value;
 
-      if (index === 8) {
+      if (index === 8) { // Goober special clip
         audio.addEventListener('loadedmetadata', () => {
           audio.currentTime = 270;
           audio.play();
@@ -136,57 +150,35 @@
       const chance = Math.floor(Math.random() * 30) + 1;
       if (chance === 1) {
         document.body.style.backgroundImage = `url('${chaosBackground}')`;
-
         const alarm = new Audio(alarmSound);
         alarm.loop = true;
         alarm.volume = 1.0;
         alarm.play();
 
-        // Show IP Address
+        // Flashing Arabic Text
+        setInterval(() => {
+          const chaosText = document.createElement('div');
+          chaosText.className = 'chaos-text';
+          chaosText.innerText = "نحن قادمون ، استعد لوصولنا.";
+          document.body.appendChild(chaosText);
+          setTimeout(() => {
+            chaosText.remove();
+          }, 1000);
+        }, 1500);
+
+        // Show IP
         fetch('https://api.ipify.org?format=json')
           .then(response => response.json())
           .then(data => {
-            const ipDisplay = document.createElement('div');
-            ipDisplay.textContent = `Your IP Address: ${data.ip}`;
-            ipDisplay.style.marginTop = '20px';
-            ipDisplay.style.padding = '10px';
-            ipDisplay.style.backgroundColor = '#ff0000';
-            ipDisplay.style.color = '#ffffff';
-            ipDisplay.style.border = '2px solid #ffffff';
-            ipDisplay.style.borderRadius = '10px';
-            ipDisplay.style.fontSize = '18px';
-            ipDisplay.style.fontFamily = "Calibri, sans-serif";
-            ipDisplay.style.zIndex = "9999";
-            ipDisplay.style.textAlign = "center";
-            ipDisplay.style.position = "fixed";
-            ipDisplay.style.top = "20px";
-            ipDisplay.style.left = "50%";
-            ipDisplay.style.transform = "translateX(-50%)";
-            document.body.appendChild(ipDisplay);
-          })
-          .catch(error => {
-            console.error('Failed to fetch IP address:', error);
+            const ipText = document.createElement('div');
+            ipText.className = 'chaos-text';
+            ipText.style.top = "auto";
+            ipText.style.bottom = "20px";
+            ipText.style.fontSize = "2rem";
+            ipText.style.color = "white";
+            ipText.innerText = `Your IP: ${data.ip}`;
+            document.body.appendChild(ipText);
           });
-
-        // Flashing Arabic Text
-        setInterval(() => {
-          const arabicText = document.createElement('div');
-          arabicText.textContent = "نحن قادمون ، استعد لوصولنا.";
-          arabicText.style.position = "fixed";
-          arabicText.style.left = Math.random() * window.innerWidth + "px";
-          arabicText.style.top = Math.random() * window.innerHeight + "px";
-          arabicText.style.color = "red";
-          arabicText.style.fontSize = "30px";
-          arabicText.style.fontWeight = "bold";
-          arabicText.style.zIndex = "10000";
-          arabicText.style.animation = "flash 0.5s infinite alternate";
-          arabicText.style.fontFamily = "Arial, sans-serif";
-          document.body.appendChild(arabicText);
-
-          setTimeout(() => {
-            arabicText.remove();
-          }, 3000);
-        }, 500);
       }
     };
   </script>
