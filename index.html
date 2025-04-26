@@ -18,21 +18,19 @@
       background-size: cover;
       background-position: center;
     }
-
     h1 {
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
       color: #00ffcc;
     }
-
     .soundboard {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 1rem;
       width: 100%;
       max-width: 800px;
+      margin-bottom: 1.5rem;
     }
-
-    .sound-button {
+    .sound-button, .stop-button {
       background-color: #1e1e1e;
       border: 2px solid #00ffcc;
       padding: 1rem;
@@ -41,15 +39,24 @@
       transition: 0.2s ease;
       text-align: center;
     }
-
-    .sound-button:hover {
+    .sound-button:hover, .stop-button:hover {
       background-color: #00ffcc;
       color: #000;
+    }
+    .controls {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    input[type="range"] {
+      width: 200px;
     }
   </style>
 </head>
 <body>
   <h1>🎧 Soundboard</h1>
+
   <div class="soundboard">
     <div class="sound-button" onclick="playSound(0)">Sound 1</div>
     <div class="sound-button" onclick="playSound(1)">Sound 2</div>
@@ -57,7 +64,12 @@
     <div class="sound-button" onclick="playSound(3)">Sound 4</div>
     <div class="sound-button" onclick="playSound(4)">Sound 5</div>
     <div class="sound-button" onclick="playSound(5)">New KEM Sound</div>
-    <div class="sound-button" onclick="playSound(6)">Sound 7</div> <!-- Fixed -->
+    <div class="sound-button" onclick="playSound(6)">Sound 7</div>
+  </div>
+
+  <div class="controls">
+    <input type="range" min="0" max="1" step="0.01" value="1" id="volumeSlider" />
+    <div class="stop-button" onclick="stopSound()">🛑 Stop</div>
   </div>
 
   <script>
@@ -67,19 +79,37 @@
       "sound3.mp3",
       "sound4.mp3",
       "sound5.mp3",
-      "youtube_kem5AfOws9Y_audio.mp3", // KEM
-      "sound 7.mp3" // Space included
+      "youtube_kem5AfOws9Y_audio.mp3",
+      "sound 7.mp3"
     ];
 
-    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3"; // Alarm
-    const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png"; // Crying man image
+    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3";
+    const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png";
+
+    let currentAudio = null;
 
     function playSound(index) {
-      const audio = new Audio(sounds[index]);
-      audio.play();
+      if (currentAudio) {
+        currentAudio.pause();
+      }
+      currentAudio = new Audio(sounds[index]);
+      currentAudio.volume = document.getElementById("volumeSlider").value;
+      currentAudio.play();
     }
 
-    // Chaos mode (1/100 chance)
+    function stopSound() {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+    }
+
+    document.getElementById("volumeSlider").addEventListener("input", function () {
+      if (currentAudio) {
+        currentAudio.volume = this.value;
+      }
+    });
+
     window.onload = function () {
       const chance = Math.floor(Math.random() * 100) + 1;
       if (chance === 1) {
