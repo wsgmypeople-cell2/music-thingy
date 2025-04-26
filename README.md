@@ -1,2 +1,1 @@
-# music-thingy
-thou wants music
+# random-thingy
