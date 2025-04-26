@@ -56,7 +56,8 @@
     <div class="sound-button" onclick="playSound(2)">Sound 3</div>
     <div class="sound-button" onclick="playSound(3)">Sound 4</div>
     <div class="sound-button" onclick="playSound(4)">Sound 5</div>
-    <div class="sound-button" onclick="playSound(5)">New KEM Sound</div> <!-- NEW SOUND -->
+    <div class="sound-button" onclick="playSound(5)">New KEM Sound</div>
+    <div class="sound-button" onclick="playSound(6)">Sound 7</div> <!-- NEW BUTTON -->
   </div>
 
   <script>
@@ -66,11 +67,12 @@
       "sound3.mp3",
       "sound4.mp3",
       "sound5.mp3",
-      "youtube_kem5AfOws9Y_audio.mp3" // new KEM sound
+      "youtube_kem5AfOws9Y_audio.mp3", // New KEM sound
+      "sound7.mp3" // New Sound 7
     ];
 
-    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3"; // alarm
-    const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png"; // crying man image
+    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3"; // alarm sound
+    const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png"; // chaos mode background image
 
     function playSound(index) {
       const audio = new Audio(sounds[index]);
