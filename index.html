@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Untitled Sound Board</title>
+  <title>Soundboard</title>
   <style>
     body {
       background-color: #121212;
       color: #ffffff;
-      font-family: Calibri, sans-serif;
+      font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -16,7 +16,7 @@
       padding: 2rem;
       background-size: cover;
       background-position: center;
-      overflow-x: hidden;
+      overflow: hidden;
     }
     h1 {
       margin-bottom: 2rem;
@@ -54,25 +54,24 @@
     .chaos-text {
       position: fixed;
       top: 0;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 0;
       font-size: 3rem;
       color: red;
       font-weight: bold;
       font-family: Calibri, sans-serif;
       animation: flash 0.5s infinite alternate;
       z-index: 9999;
-      text-align: center;
+      pointer-events: none;
       white-space: nowrap;
     }
     @keyframes flash {
       from { opacity: 1; }
-      to { opacity: 0; }
+      to { opacity: 0.2; }
     }
   </style>
 </head>
 <body>
-  <h1>🎧 Untitled Sound Board</h1>
+  <h1>🎧 Soundboard</h1>
 
   <div class="soundboard">
     <div class="sound-button" onclick="playSound(0)">Sound 1</div>
@@ -94,6 +93,7 @@
   <script>
     let currentAudio = null;
     let chaosModeActivated = false;
+    let chaosTextElements = [];
 
     const sounds = [
       "sound1.mp3",
@@ -102,7 +102,7 @@
       "sound4.mp3",
       "sound5.mp3",
       "youtube_kem5AfOws9Y_audio.mp3",
-      "sound 7.mp3",
+      "sound7.mp3",
       "youtube_3gCBFKHVJVA_audio.mp3",
       "reddit_xxx_goober_xxx_1k37csw_audio.mp3"
     ];
@@ -115,22 +115,17 @@
         currentAudio.pause();
         currentAudio.currentTime = 0;
       }
-
       const audio = new Audio(sounds[index]);
       audio.volume = document.getElementById("volumeSlider").value;
-
-      if (index === 8) { // Goober special clip
+      if (index === 8) {
         audio.addEventListener('loadedmetadata', () => {
           audio.currentTime = 270;
           audio.play();
-          setTimeout(() => {
-            audio.pause();
-          }, 8000);
+          setTimeout(() => { audio.pause(); }, 8000);
         });
       } else {
         audio.play();
       }
-
       currentAudio = audio;
     }
 
@@ -158,28 +153,52 @@
       alarm.volume = 1.0;
       alarm.play();
 
-      setInterval(() => {
-        const chaosText = document.createElement('div');
-        chaosText.className = 'chaos-text';
-        chaosText.innerText = "نحن قادمون ، استعد لوصولنا.";
-        document.body.appendChild(chaosText);
-        setTimeout(() => {
-          chaosText.remove();
-        }, 1000);
-      }, 1500);
+      createBouncingText();
 
       fetch('https://api.ipify.org?format=json')
         .then(response => response.json())
         .then(data => {
           const ipText = document.createElement('div');
           ipText.className = 'chaos-text';
-          ipText.style.top = "auto";
           ipText.style.bottom = "20px";
           ipText.style.fontSize = "2rem";
           ipText.style.color = "white";
           ipText.innerText = `Your IP: ${data.ip}`;
           document.body.appendChild(ipText);
         });
+    }
+
+    function createBouncingText() {
+      const chaosText = document.createElement('div');
+      chaosText.className = 'chaos-text';
+      chaosText.innerText = "نحن قادمون ، استعد لوصولنا.";
+      document.body.appendChild(chaosText);
+
+      let posX = Math.random() * window.innerWidth;
+      let posY = Math.random() * window.innerHeight;
+      let velX = (Math.random() < 0.5 ? 1 : -1) * (2 + Math.random() * 3);
+      let velY = (Math.random() < 0.5 ? 1 : -1) * (2 + Math.random() * 3);
+
+      chaosTextElements.push(chaosText);
+
+      function animate() {
+        posX += velX;
+        posY += velY;
+
+        if (posX <= 0 || posX + chaosText.offsetWidth >= window.innerWidth) velX *= -1;
+        if (posY <= 0 || posY + chaosText.offsetHeight >= window.innerHeight) velY *= -1;
+
+        chaosText.style.left = `${posX}px`;
+        chaosText.style.top = `${posY}px`;
+
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      // Spawn a new bouncing text every 2 seconds
+      setInterval(() => {
+        createBouncingText();
+      }, 2000);
     }
 
     window.onload = function () {
