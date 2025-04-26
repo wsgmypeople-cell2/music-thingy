@@ -6,62 +6,91 @@
   <title>Soundboard</title>
   <style>
     body {
-      background-color: #121212;
-      color: #fff;
-      font-family: Arial, sans-serif;
+      background-color: #0d0d0d;
+      color: #e0e0e0;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
       min-height: 100vh;
       padding: 2rem;
+      margin: 0;
       background-size: cover;
       background-position: center;
     }
 
     h1 {
       margin-bottom: 2rem;
-      color: #00ffcc;
+      font-weight: 300;
+      color: #00ffc8;
+      font-size: 2.5rem;
+      text-align: center;
     }
 
     .soundboard {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 1rem;
       width: 100%;
-      max-width: 800px;
+      max-width: 600px;
     }
 
     .sound-button {
-      background-color: #1e1e1e;
-      border: 2px solid #00ffcc;
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+      border: none;
       padding: 1rem;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: 0.2s ease;
-      text-align: center;
+      font-size: 1rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     .sound-button:hover {
-      background-color: #00ffcc;
-      color: #000;
+      background-color: #00ffc8;
+      color: #0d0d0d;
     }
 
     .controls {
       margin-top: 2rem;
       display: flex;
+      flex-direction: column;
       gap: 1rem;
       align-items: center;
     }
 
+    .controls button {
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .controls button:hover {
+      background-color: #ff4c4c;
+      color: #fff;
+    }
+
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
     input[type="range"] {
       width: 150px;
+      accent-color: #00ffc8;
     }
   </style>
 </head>
 <body>
-  <h1>🎧 Soundboard</h1>
-  
+  <h1>🎧 Minimal Soundboard</h1>
+
   <div class="soundboard">
     <div class="sound-button" onclick="playSound(0)">Sound 1</div>
     <div class="sound-button" onclick="playSound(1)">Sound 2</div>
@@ -70,14 +99,15 @@
     <div class="sound-button" onclick="playSound(4)">Sound 5</div>
     <div class="sound-button" onclick="playSound(5)">New KEM Sound</div>
     <div class="sound-button" onclick="playSound(6)">Sound 7</div>
-    <div class="sound-button" onclick="playSound(7)">Sound 8</div> <!-- New -->
+    <div class="sound-button" onclick="playSound(7)">Sound 8</div>
   </div>
 
   <div class="controls">
-    <button onclick="stopSound()">🛑 Stop</button>
-    <label>Volume:
+    <button onclick="stopSound()">🛑 Stop Sound</button>
+    <div class="volume-control">
+      <label for="volumeSlider">Volume:</label>
       <input type="range" min="0" max="1" step="0.01" value="1" id="volumeSlider" onchange="changeVolume()" />
-    </label>
+    </div>
   </div>
 
   <script>
@@ -87,13 +117,13 @@
       "sound3.mp3",
       "sound4.mp3",
       "sound5.mp3",
-      "youtube_kem5AfOws9Y_audio.mp3", // New KEM
-      "sound 7.mp3",                  // Sound 7
-      "youtube_3gCBFKHVJVA_audio.mp3"  // Sound 8 (YouTube named)
+      "youtube_kem5AfOws9Y_audio.mp3",
+      "sound 7.mp3",
+      "youtube_3gCBFKHVJVA_audio.mp3"
     ];
 
-    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3"; // Alarm
-    const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png"; // Crying man image
+    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3";
+    const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png";
     let currentAudio = null;
 
     function playSound(index) {
@@ -119,7 +149,6 @@
       }
     }
 
-    // Chaos mode (30/1 chance)
     window.onload = function () {
       const chance = Math.floor(Math.random() * 30) + 1;
       if (chance === 1) {
@@ -133,3 +162,4 @@
   </script>
 </body>
 </html>
+
