@@ -24,13 +24,6 @@
       color: #00ffcc;
     }
 
-    .controls {
-      margin-bottom: 1rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-
     .soundboard {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -39,7 +32,7 @@
       max-width: 800px;
     }
 
-    .sound-button, .control-button {
+    .sound-button {
       background-color: #1e1e1e;
       border: 2px solid #00ffcc;
       padding: 1rem;
@@ -49,9 +42,16 @@
       text-align: center;
     }
 
-    .sound-button:hover, .control-button:hover {
+    .sound-button:hover {
       background-color: #00ffcc;
       color: #000;
+    }
+
+    .controls {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
     }
 
     input[type="range"] {
@@ -61,12 +61,7 @@
 </head>
 <body>
   <h1>🎧 Soundboard</h1>
-
-  <div class="controls">
-    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" />
-    <button class="control-button" onclick="stopSound()">Stop Sound</button>
-  </div>
-
+  
   <div class="soundboard">
     <div class="sound-button" onclick="playSound(0)">Sound 1</div>
     <div class="sound-button" onclick="playSound(1)">Sound 2</div>
@@ -75,7 +70,14 @@
     <div class="sound-button" onclick="playSound(4)">Sound 5</div>
     <div class="sound-button" onclick="playSound(5)">New KEM Sound</div>
     <div class="sound-button" onclick="playSound(6)">Sound 7</div>
-    <div class="sound-button" onclick="playSound(7)">Sound 8</div> <!-- NEW -->
+    <div class="sound-button" onclick="playSound(7)">Sound 8</div> <!-- New -->
+  </div>
+
+  <div class="controls">
+    <button onclick="stopSound()">🛑 Stop</button>
+    <label>Volume:
+      <input type="range" min="0" max="1" step="0.01" value="1" id="volumeSlider" onchange="changeVolume()" />
+    </label>
   </div>
 
   <script>
@@ -85,14 +87,13 @@
       "sound3.mp3",
       "sound4.mp3",
       "sound5.mp3",
-      "youtube_kem5AfOws9Y_audio.mp3",
-      "sound 7.mp3",
-      "youtube_3gCBFKHVJVA_audio.mp3" // NEW sound
+      "youtube_kem5AfOws9Y_audio.mp3", // New KEM
+      "sound 7.mp3",                  // Sound 7
+      "youtube_3gCBFKHVJVA_audio.mp3"  // Sound 8 (YouTube named)
     ];
 
-    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3"; // Alarm sound
+    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3"; // Alarm
     const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png"; // Crying man image
-
     let currentAudio = null;
 
     function playSound(index) {
@@ -112,13 +113,13 @@
       }
     }
 
-    document.getElementById("volumeSlider").addEventListener("input", function () {
+    function changeVolume() {
       if (currentAudio) {
-        currentAudio.volume = this.value;
+        currentAudio.volume = document.getElementById("volumeSlider").value;
       }
-    });
+    }
 
-    // Chaos mode (1/30 chance)
+    // Chaos mode (30/1 chance)
     window.onload = function () {
       const chance = Math.floor(Math.random() * 30) + 1;
       if (chance === 1) {
