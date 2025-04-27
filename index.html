@@ -1,71 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soundboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soundboard with Chaos Mode</title>
   <style>
     body {
       background-color: #121212;
-      color: #ffffff;
+      color: white;
       font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
+      text-align: center;
       padding: 2rem;
-      background-size: cover;
-      background-position: center;
       overflow: hidden;
-    }
-    h1 {
-      margin-bottom: 2rem;
-      color: #00ffcc;
     }
     .soundboard {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 1rem;
-      width: 100%;
       max-width: 800px;
+      margin: auto;
     }
     .sound-button, .control-button {
-      background-color: #1e1e1e;
+      background: #1e1e1e;
       border: 2px solid #00ffcc;
       padding: 0.75rem;
       border-radius: 10px;
       cursor: pointer;
-      text-align: center;
-      transition: 0.2s ease;
+      transition: 0.2s;
     }
     .sound-button:hover, .control-button:hover {
-      background-color: #00ffcc;
+      background: #00ffcc;
       color: #000;
     }
     .controls {
       margin-top: 1rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
     }
     input[type="range"] {
       width: 150px;
     }
     .chaos-text {
       position: absolute;
-      font-size: 2rem;
       color: red;
-      animation: flash 0.5s infinite, move 10s linear infinite;
-      white-space: nowrap;
+      font-size: 2rem;
+      font-weight: bold;
+      user-select: none;
+      pointer-events: none;
+      animation: flash 0.5s infinite alternate;
     }
     @keyframes flash {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-    @keyframes move {
-      0% { transform: translate(0, 0); }
-      50% { transform: translate(90vw, 90vh); }
-      100% { transform: translate(0, 0); }
+      0% { opacity: 1; transform: scale(1);}
+      100% { opacity: 0.5; transform: scale(1.2);}
     }
   </style>
 </head>
@@ -85,6 +69,7 @@
   </div>
 
   <div class="controls">
+    <button class="control-button" onclick="stopAllSounds()">Stop</button>
     <input type="range" min="0" max="1" step="0.01" value="1" id="volumeSlider" onchange="changeVolume(this.value)">
   </div>
 
@@ -92,7 +77,7 @@
     let currentAudio = null;
     let chaosActive = false;
     let chaosAlarm = null;
-    let spawnInterval = null;
+    let chaosDelaySeconds = 0; // Change this for how long it waits before chaos activates
 
     const sounds = [
       "sound1.mp3",
@@ -106,12 +91,11 @@
       "sound9.mp3"
     ];
 
-    const chaosSound = new Audio('chaos_alarm.mp3');
+    const chaosSound = new Audio("chaos_sound.mp3"); // Place your chaos alarm sound here
     chaosSound.loop = true;
-    chaosSound.volume = 6.0;
+    chaosSound.volume = 1.0; // Always full volume
 
     function playSound(index) {
-      if (chaosActive) return;
       if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -122,80 +106,54 @@
       currentAudio = audio;
     }
 
+    function stopAllSounds() {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+    }
+
     function changeVolume(volume) {
-      if (currentAudio && !chaosActive) {
+      if (currentAudio) {
         currentAudio.volume = volume;
       }
     }
 
-    function startChaosMode() {
-      if (chaosActive) return;
+    function activateChaosMode() {
+      if (chaosActive) return; // already active
+
       chaosActive = true;
       chaosSound.play();
-      spawnInterval = setInterval(spawnChaosText, 200);
-      document.body.style.backgroundImage = "url('your-chaos-image.png')";
-      console.log("CHAOS MODE ACTIVATED!");
+
+      // Randomly spawn text
+      setInterval(() => {
+        const span = document.createElement('span');
+        span.className = 'chaos-text';
+        span.innerText = 'YOUR CUSTOM WORD'; // <-- Edit here easily
+        span.style.top = Math.random() * window.innerHeight + "px";
+        span.style.left = Math.random() * window.innerWidth + "px";
+        document.body.appendChild(span);
+      }, 200); // Spawn every 200ms
     }
 
-    function stopChaosMode() {
-      if (!chaosActive) return;
-      chaosActive = false;
-      chaosSound.pause();
-      chaosSound.currentTime = 0;
-      clearInterval(spawnInterval);
-      document.body.style.backgroundImage = "";
-      document.querySelectorAll(".chaos-text").forEach(el => el.remove());
-      console.log("Chaos mode stopped.");
+    function startChaosAfterDelay() {
+      setTimeout(() => {
+        activateChaosMode();
+      }, chaosDelaySeconds * 1000);
     }
 
-    function spawnChaosText() {
-      const text = document.createElement("div");
-      text.className = "chaos-text";
-      text.innerText = "NIGGERS";
-      text.style.left = Math.random() * window.innerWidth + "px";
-      text.style.top = Math.random() * window.innerHeight + "px";
-      document.body.appendChild(text);
-    }
-
-    async function checkChaosJson() {
-      try {
-        const response = await fetch('./chaos.json?t=' + new Date().getTime());
-        const data = await response.json();
-        if (data.chaos) {
-          if (!chaosActive) {
-            const delaySeconds = data.delay || 0;
-            if (delaySeconds > 0) {
-              console.log(`Waiting ${delaySeconds} seconds before starting chaos...`);
-              setTimeout(startChaosMode, delaySeconds * 1000);
-            } else {
-              startChaosMode();
-            }
+    // Fetch chaos.json every 3 seconds
+    setInterval(() => {
+      fetch('https://raw.githubusercontent.com/wsgmypeople-cell2/random-thingy/main/chaos.json')
+        .then(response => response.json())
+        .then(data => {
+          if (data.chaos) {
+            startChaosAfterDelay();
           }
-        } else {
-          stopChaosMode();
-        }
-      } catch (err) {
-        console.error("Error fetching chaos.json:", err);
-      }
-    }
+        })
+        .catch(error => console.error('Error fetching chaos.json:', error));
+    }, 3000);
 
-    setInterval(checkChaosJson, 3000);
-
-    // Optional kill key (disabled if chaos.json says chaos = true)
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "\\") {
-        fetch('./chaos.json?t=' + new Date().getTime())
-          .then(response => response.json())
-          .then(data => {
-            if (!data.chaos) {
-              stopChaosMode();
-            } else {
-              console.log("Remote chaos still active. Cannot kill.");
-            }
-          });
-      }
-    });
   </script>
 </body>
 </html>
-
