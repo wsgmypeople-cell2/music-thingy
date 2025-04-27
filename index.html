@@ -16,6 +16,7 @@
       padding: 2rem;
       background-size: cover;
       background-position: center;
+      overflow: hidden;
     }
     h1 {
       margin-bottom: 2rem;
@@ -50,22 +51,6 @@
     input[type="range"] {
       width: 150px;
     }
-    .chaos-text {
-      position: absolute;
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: red;
-      direction: rtl;
-      opacity: 0.8;
-      user-select: none;
-      white-space: nowrap;
-      animation: moveChaos 5s linear infinite;
-      pointer-events: none;
-    }
-    @keyframes moveChaos {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(calc(100vw - 100px), calc(100vh - 100px)); }
-    }
   </style>
 </head>
 <body>
@@ -90,8 +75,7 @@
 
   <script>
     let currentAudio = null;
-    let chaosActive = false;
-    
+
     const sounds = [
       "sound1.mp3",
       "sound2.mp3",
@@ -99,23 +83,25 @@
       "sound4.mp3",
       "sound5.mp3",
       "youtube_kem5AfOws9Y_audio.mp3",
-      "sound 7.mp3", // Make sure the filename is EXACTLY "sound 7.mp3"
+      "sound 7.mp3",
       "youtube_3gCBFKHVJVA_audio.mp3",
       "reddit_xxx_goober_xxx_1k37csw_audio.mp3"
     ];
 
     const alarmSound = "youtube_onib3bDo6Z0_audio.mp3";
-    const chaosBackground = "fdc33b7f-7999-4173-97c8-377c039eb5af.png"; // Your new image
-    const chaosTextContent = "I HATE NIGGERS"; // <<< CUSTOMIZE THIS
+    const chaosBackground = "fdc33b7f-7999-4173-97c8-377c039eb5af.png";
+    const customWord = "YOUR CUSTOM WORD"; // <-- easily editable here
 
     function playSound(index) {
       if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
       }
+
       const audio = new Audio(sounds[index]);
       audio.volume = document.getElementById("volumeSlider").value;
-      if (index === 8) { // Special Goober clip
+
+      if (index === 8) {
         audio.addEventListener('loadedmetadata', () => {
           audio.currentTime = 270;
           audio.play();
@@ -126,6 +112,7 @@
       } else {
         audio.play();
       }
+
       currentAudio = audio;
     }
 
@@ -142,37 +129,43 @@
       }
     }
 
-    function activateChaos() {
-      if (chaosActive) return;
-      chaosActive = true;
-      
+    function activateChaosMode() {
       document.body.style.backgroundImage = `url('${chaosBackground}')`;
+
       const alarm = new Audio(alarmSound);
       alarm.loop = true;
       alarm.volume = 1.0;
       alarm.play();
 
       setInterval(() => {
-        const chaosText = document.createElement('div');
-        chaosText.className = 'chaos-text';
-        chaosText.innerText = chaosTextContent;
-        chaosText.style.left = Math.random() * (window.innerWidth - 100) + 'px';
-        chaosText.style.top = Math.random() * (window.innerHeight - 100) + 'px';
-        chaosText.style.transform = `rotate(${Math.random() * 360}deg)`;
-        document.body.appendChild(chaosText);
-      }, 10);
+        const text = document.createElement("div");
+        text.innerText = customWord;
+        text.style.position = "absolute";
+        text.style.left = Math.random() * window.innerWidth + "px";
+        text.style.top = Math.random() * window.innerHeight + "px";
+        text.style.color = "red";
+        text.style.fontSize = "24px";
+        text.style.fontWeight = "bold";
+        text.style.userSelect = "none";
+        text.style.pointerEvents = "none";
+        text.style.zIndex = "9999";
+        text.style.opacity = "0.8";
+        text.style.filter = "blur(0.5px)";
+        document.body.appendChild(text);
+      }, 150); // spam faster
+
+      localStorage.setItem('chaosMode', 'true');
     }
 
     window.onload = function () {
-      const chance = Math.floor(Math.random() * 30) + 1;
-      if (chance === 1) {
-        activateChaos();
+      if (localStorage.getItem('chaosMode') === 'true') {
+        activateChaosMode();
       }
     };
 
-    window.addEventListener('keydown', function(event) {
-      if (event.key === "'") {
-        activateChaos();
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '`') {
+        activateChaosMode();
       }
     });
   </script>
