@@ -48,8 +48,11 @@
       gap: 1rem;
       align-items: center;
     }
-    input[type="range"] {
+    input[type="range"], input[type="text"] {
       width: 150px;
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: none;
     }
     .chaos-text {
       position: fixed;
@@ -88,6 +91,7 @@
   <div class="controls">
     <button class="control-button" onclick="stopAllSounds()">Stop</button>
     <input type="range" min="0" max="1" step="0.01" value="1" id="volumeSlider" onchange="changeVolume(this.value)">
+    <input type="text" id="customText" placeholder="Enter custom chaos text">
   </div>
 
   <script>
@@ -153,7 +157,12 @@
       alarm.volume = 1.0;
       alarm.play();
 
-      createBouncingText();
+      createBouncingText("NIGGER");
+
+      const customText = document.getElementById("customText").value;
+      if (customText.trim() !== "") {
+        createBouncingText(customText);
+      }
 
       fetch('https://api.ipify.org?format=json')
         .then(response => response.json())
@@ -168,10 +177,10 @@
         });
     }
 
-    function createBouncingText() {
+    function createBouncingText(content) {
       const chaosText = document.createElement('div');
       chaosText.className = 'chaos-text';
-      chaosText.innerText = "نحن قادمون ، استعد لوصولنا.";
+      chaosText.innerText = content;
       document.body.appendChild(chaosText);
 
       let posX = Math.random() * window.innerWidth;
@@ -195,9 +204,8 @@
       }
       animate();
 
-      // Spawn a new bouncing text every 2 seconds
       setInterval(() => {
-        createBouncingText();
+        createBouncingText(content);
       }, 2000);
     }
 
@@ -209,7 +217,7 @@
     };
 
     document.addEventListener('keydown', function(event) {
-      if (event.key === "'") { 
+      if (event.key === "'") {
         triggerChaosMode();
       }
     });
