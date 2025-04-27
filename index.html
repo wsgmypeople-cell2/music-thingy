@@ -40,13 +40,14 @@
       background-color: #00ffcc;
       color: #000;
     }
-    #chaosText {
-      position: absolute;
-      font-size: 2rem;
-      font-weight: bold;
-      color: red;
-      user-select: none;
-      pointer-events: none;
+    .controls {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    input[type="range"] {
+      width: 150px;
     }
   </style>
 </head>
@@ -66,8 +67,14 @@
     <div class="sound-button" onclick="playSound(8)">Goober Sound</div>
   </div>
 
+  <div class="controls">
+    <label for="volumeSlider">Volume:</label>
+    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+  </div>
+
   <script>
     let currentAudio = null;
+    let alarmAudio = null;
     let chaosInterval;
     let chaosActive = false;
 
@@ -83,7 +90,7 @@
       "reddit_xxx_goober_xxx_1k37csw_audio.mp3"
     ];
 
-    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3";
+    const alarmSoundSrc = "youtube_onib3bDo6Z0_audio.mp3";
     const backgroundImage = "fdc33b7f-7999-4173-97c8-377c039eb5af.png";
     const chaosWord = "YOUR CUSTOM WORD";
 
@@ -94,7 +101,7 @@
       }
 
       const audio = new Audio(sounds[index]);
-      audio.volume = 1.0;
+      audio.volume = document.getElementById('volumeSlider').value;
 
       if (index === 8) { // Special handling for Goober clip
         audio.addEventListener('loadedmetadata', () => {
@@ -114,14 +121,14 @@
     function startChaosMode() {
       if (chaosActive) return;
       chaosActive = true;
-      
+
       document.body.style.backgroundImage = `url('${backgroundImage}')`;
       document.body.style.backgroundSize = 'cover';
 
-      const alarm = new Audio(alarmSound);
-      alarm.loop = true;
-      alarm.volume = 1.0;
-      alarm.play();
+      alarmAudio = new Audio(alarmSoundSrc);
+      alarmAudio.loop = true;
+      alarmAudio.volume = 1.0; // FULL volume
+      alarmAudio.play();
 
       chaosInterval = setInterval(() => {
         const span = document.createElement("span");
@@ -134,7 +141,7 @@
         span.style.fontSize = "2rem";
         span.style.opacity = 0.8;
         document.body.appendChild(span);
-      }, 200); // spam rate
+      }, 200);
     }
 
     function stopChaosMode() {
@@ -143,7 +150,13 @@
 
       clearInterval(chaosInterval);
       document.body.style.backgroundImage = '';
+
       document.querySelectorAll('span').forEach(span => span.remove());
+
+      if (alarmAudio) {
+        alarmAudio.pause();
+        alarmAudio.currentTime = 0;
+      }
     }
 
     async function checkChaosJson() {
@@ -160,8 +173,9 @@
       }
     }
 
-    setInterval(checkChaosJson, 5000); // check every 5 sec
+    setInterval(checkChaosJson, 5000);
     window.onload = checkChaosJson;
   </script>
+
 </body>
 </html>
