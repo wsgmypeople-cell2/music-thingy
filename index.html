@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Untitled Sound Board</title>
+  <title>Soundboard</title>
   <style>
     body {
       background-color: #121212;
       color: #ffffff;
-      font-family: Calibri, sans-serif;
+      font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
       padding: 2rem;
-      overflow: hidden;
       background-size: cover;
       background-position: center;
     }
@@ -53,23 +52,24 @@
     }
     .chaos-text {
       position: absolute;
-      font-size: 3rem;
-      color: red;
+      font-size: 2.5rem;
       font-weight: bold;
-      pointer-events: none;
-      opacity: 0.7;
-      white-space: nowrap;
+      color: red;
+      direction: rtl;
+      opacity: 0.8;
       user-select: none;
-      animation: move 5s linear infinite;
+      white-space: nowrap;
+      animation: moveChaos 5s linear infinite;
+      pointer-events: none;
     }
-    @keyframes move {
-      from {transform: translate(0, 0);}
-      to {transform: translate(100vw, 100vh);}
+    @keyframes moveChaos {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(calc(100vw - 100px), calc(100vh - 100px)); }
     }
   </style>
 </head>
 <body>
-  <h1>🎧 Untitled Sound Board</h1>
+  <h1>🎧 Soundboard</h1>
 
   <div class="soundboard">
     <div class="sound-button" onclick="playSound(0)">Sound 1</div>
@@ -77,7 +77,7 @@
     <div class="sound-button" onclick="playSound(2)">Sound 3</div>
     <div class="sound-button" onclick="playSound(3)">Sound 4</div>
     <div class="sound-button" onclick="playSound(4)">Sound 5</div>
-    <div class="sound-button" onclick="playSound(5)">KEM Sound</div>
+    <div class="sound-button" onclick="playSound(5)">New KEM Sound</div>
     <div class="sound-button" onclick="playSound(6)">Sound 7</div>
     <div class="sound-button" onclick="playSound(7)">Sound 8</div>
     <div class="sound-button" onclick="playSound(8)">Goober Sound</div>
@@ -91,7 +91,7 @@
   <script>
     let currentAudio = null;
     let chaosActive = false;
-
+    
     const sounds = [
       "sound1.mp3",
       "sound2.mp3",
@@ -99,27 +99,25 @@
       "sound4.mp3",
       "sound5.mp3",
       "youtube_kem5AfOws9Y_audio.mp3",
-      "sound 7.mp3", // <- Space kept here because your file is named with a space!
+      "sound 7.mp3", // Make sure the filename is EXACTLY "sound 7.mp3"
       "youtube_3gCBFKHVJVA_audio.mp3",
       "reddit_xxx_goober_xxx_1k37csw_audio.mp3"
     ];
 
     const alarmSound = "youtube_onib3bDo6Z0_audio.mp3";
-    const chaosBackground = "21559ecb-29c1-4339-b47c-cf1a70854078.png";
-    const chaosTextContent = "NIGGER"; // <- Customize here!
+    const chaosBackground = "fdc33b7f-7999-4173-97c8-377c039eb5af.png"; // Your new image
+    const chaosTextContent = "YOUR CUSTOM WORD"; // <<< CUSTOMIZE THIS
 
     function playSound(index) {
       if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
       }
-
       const audio = new Audio(sounds[index]);
       audio.volume = document.getElementById("volumeSlider").value;
-
-      if (index === 8) { 
+      if (index === 8) { // Special Goober clip
         audio.addEventListener('loadedmetadata', () => {
-          audio.currentTime = 270; 
+          audio.currentTime = 270;
           audio.play();
           setTimeout(() => {
             audio.pause();
@@ -128,7 +126,6 @@
       } else {
         audio.play();
       }
-
       currentAudio = audio;
     }
 
@@ -148,24 +145,22 @@
     function activateChaos() {
       if (chaosActive) return;
       chaosActive = true;
-
+      
       document.body.style.backgroundImage = `url('${chaosBackground}')`;
       const alarm = new Audio(alarmSound);
       alarm.loop = true;
-      alarm.volume = 6.0;
+      alarm.volume = 1.0;
       alarm.play();
 
       setInterval(() => {
         const chaosText = document.createElement('div');
         chaosText.className = 'chaos-text';
         chaosText.innerText = chaosTextContent;
-
-        chaosText.style.left = Math.random() * window.innerWidth + 'px';
-        chaosText.style.top = Math.random() * window.innerHeight + 'px';
+        chaosText.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+        chaosText.style.top = Math.random() * (window.innerHeight - 100) + 'px';
         chaosText.style.transform = `rotate(${Math.random() * 360}deg)`;
-
         document.body.appendChild(chaosText);
-      }, 100);
+      }, 10);
     }
 
     window.onload = function () {
@@ -175,8 +170,8 @@
       }
     };
 
-    document.addEventListener('keydown', function(e) {
-      if (e.key === "'") {
+    window.addEventListener('keydown', function(event) {
+      if (event.key === "'") {
         activateChaos();
       }
     });
