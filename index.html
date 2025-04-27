@@ -1,59 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Soundboard with Remote Chaos Mode</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soundboard</title>
   <style>
     body {
       background-color: #121212;
-      color: white;
+      color: #ffffff;
       font-family: Arial, sans-serif;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
       padding: 2rem;
       overflow: hidden;
+    }
+    h1 {
+      margin-bottom: 2rem;
+      color: #00ffcc;
     }
     .soundboard {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 1rem;
+      width: 100%;
       max-width: 800px;
-      margin: auto;
     }
-    .sound-button, .control-button {
-      background: #1e1e1e;
+    .sound-button {
+      background-color: #1e1e1e;
       border: 2px solid #00ffcc;
       padding: 0.75rem;
       border-radius: 10px;
       cursor: pointer;
-      transition: 0.2s;
+      text-align: center;
+      transition: 0.2s ease;
     }
-    .sound-button:hover, .control-button:hover {
-      background: #00ffcc;
+    .sound-button:hover {
+      background-color: #00ffcc;
       color: #000;
     }
     .controls {
       margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
     input[type="range"] {
       width: 150px;
     }
-    .chaos-text {
-      position: absolute;
-      color: red;
-      font-size: 2rem;
-      font-weight: bold;
-      user-select: none;
-      pointer-events: none;
-      animation: flash 0.5s infinite alternate;
-    }
-    @keyframes flash {
-      0% { opacity: 1; transform: scale(1);}
-      100% { opacity: 0.5; transform: scale(1.2);}
-    }
   </style>
 </head>
 <body>
+
   <h1>🎧 Soundboard</h1>
 
   <div class="soundboard">
@@ -62,24 +61,22 @@
     <div class="sound-button" onclick="playSound(2)">Sound 3</div>
     <div class="sound-button" onclick="playSound(3)">Sound 4</div>
     <div class="sound-button" onclick="playSound(4)">Sound 5</div>
-    <div class="sound-button" onclick="playSound(5)">Sound 6</div>
+    <div class="sound-button" onclick="playSound(5)">New KEM Sound</div>
     <div class="sound-button" onclick="playSound(6)">Sound 7</div>
     <div class="sound-button" onclick="playSound(7)">Sound 8</div>
-    <div class="sound-button" onclick="playSound(8)">Sound 9</div>
+    <div class="sound-button" onclick="playSound(8)">Goober Sound</div>
   </div>
 
   <div class="controls">
-    <button class="control-button" onclick="stopAllSounds()">Stop</button>
-    <input type="range" min="0" max="1" step="0.01" value="1" id="volumeSlider" onchange="changeVolume(this.value)">
+    <label for="volumeSlider">Volume:</label>
+    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
   </div>
 
   <script>
     let currentAudio = null;
+    let alarmAudio = null;
+    let chaosInterval;
     let chaosActive = false;
-    let chaosSound = new Audio("chaos_sound.mp3");
-    chaosSound.loop = true;
-    chaosSound.volume = 1.0; // Full blast always
-    let chaosDelaySeconds = 0; // Change this if you want a wait (example 10 = 10 seconds)
 
     const sounds = [
       "sound1.mp3",
@@ -87,70 +84,100 @@
       "sound3.mp3",
       "sound4.mp3",
       "sound5.mp3",
-      "sound6.mp3",
-      "sound 7.mp3", // Important: space between sound and 7 because of filename!
-      "sound8.mp3",
-      "sound9.mp3"
+      "youtube_kem5AfOws9Y_audio.mp3",
+      "sound 7.mp3",
+      "youtube_3gCBFKHVJVA_audio.mp3",
+      "reddit_xxx_goober_xxx_1k37csw_audio.mp3"
     ];
+
+    const alarmSoundSrc = "youtube_onib3bDo6Z0_audio.mp3";
+    const backgroundImage = "fdc33b7f-7999-4173-97c8-377c039eb5af.png";
+    const chaosWord = "TOTAL NIGGER DEATH";
 
     function playSound(index) {
       if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
       }
+
       const audio = new Audio(sounds[index]);
-      audio.volume = document.getElementById("volumeSlider").value;
-      audio.play();
+      audio.volume = document.getElementById('volumeSlider').value;
+
+      if (index === 8) { // Special handling for Goober clip
+        audio.addEventListener('loadedmetadata', () => {
+          audio.currentTime = 270;
+          audio.play();
+          setTimeout(() => {
+            audio.pause();
+          }, 8000);
+        });
+      } else {
+        audio.play();
+      }
+
       currentAudio = audio;
     }
 
-    function stopAllSounds() {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-      }
-    }
-
-    function changeVolume(volume) {
-      if (currentAudio) {
-        currentAudio.volume = volume;
-      }
-    }
-
-    function activateChaosMode() {
-      if (chaosActive) return; // Already active
+    function startChaosMode() {
+      if (chaosActive) return;
       chaosActive = true;
-      chaosSound.play();
 
-      // Spawn text repeatedly
-      setInterval(() => {
-        const span = document.createElement('span');
-        span.className = 'chaos-text';
-        span.innerText = 'YOUR CUSTOM WORD'; // <<< EDIT YOUR WORD HERE
-        span.style.top = Math.random() * window.innerHeight + "px";
+      document.body.style.backgroundImage = `url('${backgroundImage}')`;
+      document.body.style.backgroundSize = 'cover';
+
+      alarmAudio = new Audio(alarmSoundSrc);
+      alarmAudio.loop = true;
+      alarmAudio.volume = 1.0; // FULL volume
+      alarmAudio.play();
+
+      chaosInterval = setInterval(() => {
+        const span = document.createElement("span");
+        span.textContent = chaosWord;
+        span.style.position = "absolute";
         span.style.left = Math.random() * window.innerWidth + "px";
+        span.style.top = Math.random() * window.innerHeight + "px";
+        span.style.color = "red";
+        span.style.fontWeight = "bold";
+        span.style.fontSize = "2rem";
+        span.style.opacity = 0.8;
         document.body.appendChild(span);
       }, 200);
     }
 
-    function startChaosAfterDelay() {
-      setTimeout(() => {
-        activateChaosMode();
-      }, chaosDelaySeconds * 1000);
+    function stopChaosMode() {
+      if (!chaosActive) return;
+      chaosActive = false;
+
+      clearInterval(chaosInterval);
+      document.body.style.backgroundImage = '';
+
+      document.querySelectorAll('span').forEach(span => span.remove());
+
+      if (alarmAudio) {
+        alarmAudio.pause();
+        alarmAudio.currentTime = 0;
+      }
     }
 
-    // Remote chaos trigger check
-    setInterval(() => {
-      fetch('https://raw.githubusercontent.com/wsgmypeople-cell2/random-thingy/main/chaos.json')
-        .then(response => response.json())
-        .then(data => {
-          if (data.chaos) {
-            startChaosAfterDelay();
-          }
-        })
-        .catch(error => console.error('Error fetching chaos.json:', error));
-    }, 3000);
+    async function checkChaosJson() {
+      try {
+        const response = await fetch('https://raw.githubusercontent.com/wsgmypeople-cell2/random-thingy/main/chaos.json?t=' + new Date().getTime());
+        const data = await response.json();
+        if (data.chaos) {
+          startChaosMode();
+        } else {
+          stopChaosMode();
+        }
+      } catch (err) {
+        console.error("Error fetching chaos.json:", err);
+      }
+    }
 
+    // 🔥 Check every 1 second
+    setInterval(checkChaosJson, 1000);
+    window.onload = checkChaosJson;
   </script>
+
 </body>
 </html>
+
