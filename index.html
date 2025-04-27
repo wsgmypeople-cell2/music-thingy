@@ -14,6 +14,8 @@
       align-items: center;
       min-height: 100vh;
       padding: 2rem;
+      background-size: cover;
+      background-position: center;
       overflow: hidden;
     }
     h1 {
@@ -27,7 +29,7 @@
       width: 100%;
       max-width: 800px;
     }
-    .sound-button {
+    .sound-button, .control-button {
       background-color: #1e1e1e;
       border: 2px solid #00ffcc;
       padding: 0.75rem;
@@ -36,23 +38,38 @@
       text-align: center;
       transition: 0.2s ease;
     }
-    .sound-button:hover {
+    .sound-button:hover, .control-button:hover {
       background-color: #00ffcc;
       color: #000;
     }
     .controls {
       margin-top: 1rem;
       display: flex;
-      align-items: center;
       gap: 1rem;
+      align-items: center;
     }
     input[type="range"] {
       width: 150px;
     }
+    .chaos-text {
+      position: absolute;
+      font-size: 2rem;
+      color: red;
+      animation: flash 0.5s infinite, move 10s linear infinite;
+      white-space: nowrap;
+    }
+    @keyframes flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    @keyframes move {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(90vw, 90vh); }
+      100% { transform: translate(0, 0); }
+    }
   </style>
 </head>
 <body>
-
   <h1>🎧 Soundboard</h1>
 
   <div class="soundboard">
@@ -61,22 +78,21 @@
     <div class="sound-button" onclick="playSound(2)">Sound 3</div>
     <div class="sound-button" onclick="playSound(3)">Sound 4</div>
     <div class="sound-button" onclick="playSound(4)">Sound 5</div>
-    <div class="sound-button" onclick="playSound(5)">New KEM Sound</div>
+    <div class="sound-button" onclick="playSound(5)">Sound 6</div>
     <div class="sound-button" onclick="playSound(6)">Sound 7</div>
     <div class="sound-button" onclick="playSound(7)">Sound 8</div>
-    <div class="sound-button" onclick="playSound(8)">Goober Sound</div>
+    <div class="sound-button" onclick="playSound(8)">Sound 9</div>
   </div>
 
   <div class="controls">
-    <label for="volumeSlider">Volume:</label>
-    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+    <input type="range" min="0" max="1" step="0.01" value="1" id="volumeSlider" onchange="changeVolume(this.value)">
   </div>
 
   <script>
     let currentAudio = null;
-    let alarmAudio = null;
-    let chaosInterval;
     let chaosActive = false;
+    let chaosAlarm = null;
+    let spawnInterval = null;
 
     const sounds = [
       "sound1.mp3",
@@ -84,79 +100,61 @@
       "sound3.mp3",
       "sound4.mp3",
       "sound5.mp3",
-      "youtube_kem5AfOws9Y_audio.mp3",
+      "sound6.mp3",
       "sound 7.mp3",
-      "youtube_3gCBFKHVJVA_audio.mp3",
-      "reddit_xxx_goober_xxx_1k37csw_audio.mp3"
+      "sound8.mp3",
+      "sound9.mp3"
     ];
 
-    const alarmSoundSrc = "youtube_onib3bDo6Z0_audio.mp3";
-    const backgroundImage = "fdc33b7f-7999-4173-97c8-377c039eb5af.png";
-    const chaosWord = "YOUR CUSTOM WORD";
+    const chaosSound = new Audio('chaos_alarm.mp3');
+    chaosSound.loop = true;
+    chaosSound.volume = 6.0;
 
     function playSound(index) {
+      if (chaosActive) return;
       if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
       }
-
       const audio = new Audio(sounds[index]);
-      audio.volume = document.getElementById('volumeSlider').value;
-
-      if (index === 8) { // Special handling for Goober clip
-        audio.addEventListener('loadedmetadata', () => {
-          audio.currentTime = 270;
-          audio.play();
-          setTimeout(() => {
-            audio.pause();
-          }, 8000);
-        });
-      } else {
-        audio.play();
-      }
-
+      audio.volume = document.getElementById("volumeSlider").value;
+      audio.play();
       currentAudio = audio;
+    }
+
+    function changeVolume(volume) {
+      if (currentAudio && !chaosActive) {
+        currentAudio.volume = volume;
+      }
     }
 
     function startChaosMode() {
       if (chaosActive) return;
       chaosActive = true;
-
-      document.body.style.backgroundImage = `url('${backgroundImage}')`;
-      document.body.style.backgroundSize = 'cover';
-
-      alarmAudio = new Audio(alarmSoundSrc);
-      alarmAudio.loop = true;
-      alarmAudio.volume = 1.0; // FULL volume
-      alarmAudio.play();
-
-      chaosInterval = setInterval(() => {
-        const span = document.createElement("span");
-        span.textContent = chaosWord;
-        span.style.position = "absolute";
-        span.style.left = Math.random() * window.innerWidth + "px";
-        span.style.top = Math.random() * window.innerHeight + "px";
-        span.style.color = "red";
-        span.style.fontWeight = "bold";
-        span.style.fontSize = "2rem";
-        span.style.opacity = 0.8;
-        document.body.appendChild(span);
-      }, 200);
+      chaosSound.play();
+      spawnInterval = setInterval(spawnChaosText, 200);
+      document.body.style.backgroundImage = "url('your-chaos-image.png')";
+      console.log("CHAOS MODE ACTIVATED!");
     }
 
     function stopChaosMode() {
       if (!chaosActive) return;
       chaosActive = false;
+      chaosSound.pause();
+      chaosSound.currentTime = 0;
+      clearInterval(spawnInterval);
+      document.body.style.backgroundImage = "";
+      document.querySelectorAll(".chaos-text").forEach(el => el.remove());
+      console.log("Chaos mode stopped.");
+    }
 
-      clearInterval(chaosInterval);
-      document.body.style.backgroundImage = '';
-
-      document.querySelectorAll('span').forEach(span => span.remove());
-
-      if (alarmAudio) {
-        alarmAudio.pause();
-        alarmAudio.currentTime = 0;
-      }
+    function spawnChaosText() {
+      const text = document.createElement("div");
+      text.className = "chaos-text";
+      text.innerText = "NIGGERS";
+      text.style.left = Math.random() * window.innerWidth + "px";
+      text.style.top = Math.random() * window.innerHeight + "px";
+      document.body.appendChild(text);
     }
 
     async function checkChaosJson() {
@@ -164,7 +162,15 @@
         const response = await fetch('./chaos.json?t=' + new Date().getTime());
         const data = await response.json();
         if (data.chaos) {
-          startChaosMode();
+          if (!chaosActive) {
+            const delaySeconds = data.delay || 0;
+            if (delaySeconds > 0) {
+              console.log(`Waiting ${delaySeconds} seconds before starting chaos...`);
+              setTimeout(startChaosMode, delaySeconds * 1000);
+            } else {
+              startChaosMode();
+            }
+          }
         } else {
           stopChaosMode();
         }
@@ -173,9 +179,23 @@
       }
     }
 
-    setInterval(checkChaosJson, 5000);
-    window.onload = checkChaosJson;
-  </script>
+    setInterval(checkChaosJson, 3000);
 
+    // Optional kill key (disabled if chaos.json says chaos = true)
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "\\") {
+        fetch('./chaos.json?t=' + new Date().getTime())
+          .then(response => response.json())
+          .then(data => {
+            if (!data.chaos) {
+              stopChaosMode();
+            } else {
+              console.log("Remote chaos still active. Cannot kill.");
+            }
+          });
+      }
+    });
+  </script>
 </body>
 </html>
+
