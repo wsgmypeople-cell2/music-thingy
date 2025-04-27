@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Soundboard with Chaos Mode</title>
+  <title>Soundboard with Remote Chaos Mode</title>
   <style>
     body {
       background-color: #121212;
@@ -76,8 +76,10 @@
   <script>
     let currentAudio = null;
     let chaosActive = false;
-    let chaosAlarm = null;
-    let chaosDelaySeconds = 0; // Change this for how long it waits before chaos activates
+    let chaosSound = new Audio("chaos_sound.mp3");
+    chaosSound.loop = true;
+    chaosSound.volume = 1.0; // Full blast always
+    let chaosDelaySeconds = 0; // Change this if you want a wait (example 10 = 10 seconds)
 
     const sounds = [
       "sound1.mp3",
@@ -86,14 +88,10 @@
       "sound4.mp3",
       "sound5.mp3",
       "sound6.mp3",
-      "sound 7.mp3",
+      "sound 7.mp3", // Important: space between sound and 7 because of filename!
       "sound8.mp3",
       "sound9.mp3"
     ];
-
-    const chaosSound = new Audio("chaos_sound.mp3"); // Place your chaos alarm sound here
-    chaosSound.loop = true;
-    chaosSound.volume = 1.0; // Always full volume
 
     function playSound(index) {
       if (currentAudio) {
@@ -120,20 +118,19 @@
     }
 
     function activateChaosMode() {
-      if (chaosActive) return; // already active
-
+      if (chaosActive) return; // Already active
       chaosActive = true;
       chaosSound.play();
 
-      // Randomly spawn text
+      // Spawn text repeatedly
       setInterval(() => {
         const span = document.createElement('span');
         span.className = 'chaos-text';
-        span.innerText = 'YOUR CUSTOM WORD'; // <-- Edit here easily
+        span.innerText = 'YOUR CUSTOM WORD'; // <<< EDIT YOUR WORD HERE
         span.style.top = Math.random() * window.innerHeight + "px";
         span.style.left = Math.random() * window.innerWidth + "px";
         document.body.appendChild(span);
-      }, 200); // Spawn every 200ms
+      }, 200);
     }
 
     function startChaosAfterDelay() {
@@ -142,7 +139,7 @@
       }, chaosDelaySeconds * 1000);
     }
 
-    // Fetch chaos.json every 3 seconds
+    // Remote chaos trigger check
     setInterval(() => {
       fetch('https://raw.githubusercontent.com/wsgmypeople-cell2/random-thingy/main/chaos.json')
         .then(response => response.json())
