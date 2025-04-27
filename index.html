@@ -14,10 +14,7 @@
       align-items: center;
       min-height: 100vh;
       padding: 2rem;
-      background-size: cover;
-      background-position: center;
       overflow: hidden;
-      position: relative;
     }
     h1 {
       margin-bottom: 2rem;
@@ -30,7 +27,7 @@
       width: 100%;
       max-width: 800px;
     }
-    .sound-button, .control-button {
+    .sound-button {
       background-color: #1e1e1e;
       border: 2px solid #00ffcc;
       padding: 0.75rem;
@@ -39,35 +36,22 @@
       text-align: center;
       transition: 0.2s ease;
     }
-    .sound-button:hover, .control-button:hover {
+    .sound-button:hover {
       background-color: #00ffcc;
       color: #000;
     }
-    .controls {
-      margin-top: 1rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-    input[type="range"] {
-      width: 150px;
-    }
-    .chaos-text {
+    #chaosText {
       position: absolute;
-      font-size: 24px;
-      color: red;
+      font-size: 2rem;
       font-weight: bold;
-      animation: move 5s linear infinite;
-      opacity: 0.7;
-    }
-    @keyframes move {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(100vw, 100vh); }
+      color: red;
+      user-select: none;
+      pointer-events: none;
     }
   </style>
 </head>
-
 <body>
+
   <h1>🎧 Soundboard</h1>
 
   <div class="soundboard">
@@ -76,22 +60,16 @@
     <div class="sound-button" onclick="playSound(2)">Sound 3</div>
     <div class="sound-button" onclick="playSound(3)">Sound 4</div>
     <div class="sound-button" onclick="playSound(4)">Sound 5</div>
-    <div class="sound-button" onclick="playSound(5)">Sound 6</div>
+    <div class="sound-button" onclick="playSound(5)">New KEM Sound</div>
     <div class="sound-button" onclick="playSound(6)">Sound 7</div>
     <div class="sound-button" onclick="playSound(7)">Sound 8</div>
-    <div class="sound-button" onclick="playSound(8)">Sound 9</div>
-  </div>
-
-  <div class="controls">
-    <button class="control-button" onclick="manualChaos()">Activate Chaos</button>
-    <input type="range" min="0" max="1" step="0.01" value="1" id="volumeSlider" onchange="changeVolume(this.value)">
+    <div class="sound-button" onclick="playSound(8)">Goober Sound</div>
   </div>
 
   <script>
     let currentAudio = null;
-    let chaosInterval = null;
-    let isRemoteChaos = false;
-    let isChaosActive = false;
+    let chaosInterval;
+    let chaosActive = false;
 
     const sounds = [
       "sound1.mp3",
@@ -99,17 +77,15 @@
       "sound3.mp3",
       "sound4.mp3",
       "sound5.mp3",
-      "sound6.mp3",
+      "youtube_kem5AfOws9Y_audio.mp3",
       "sound 7.mp3",
-      "sound8.mp3",
-      "sound9.mp3"
+      "youtube_3gCBFKHVJVA_audio.mp3",
+      "reddit_xxx_goober_xxx_1k37csw_audio.mp3"
     ];
 
-    const alarmSound = new Audio("youtube_onib3bDo6Z0_audio.mp3");
-    alarmSound.loop = true;
-    alarmSound.volume = 1.0;
-    const chaosBackground = "fdc33b7f-7999-4173-97c8-377c039eb5af.png";
-    const customWord = "YOUR CUSTOM WORD";
+    const alarmSound = "youtube_onib3bDo6Z0_audio.mp3";
+    const backgroundImage = "fdc33b7f-7999-4173-97c8-377c039eb5af.png";
+    const chaosWord = "YOUR CUSTOM WORD";
 
     function playSound(index) {
       if (currentAudio) {
@@ -118,83 +94,74 @@
       }
 
       const audio = new Audio(sounds[index]);
-      audio.volume = document.getElementById("volumeSlider").value;
-      audio.play();
+      audio.volume = 1.0;
+
+      if (index === 8) { // Special handling for Goober clip
+        audio.addEventListener('loadedmetadata', () => {
+          audio.currentTime = 270;
+          audio.play();
+          setTimeout(() => {
+            audio.pause();
+          }, 8000);
+        });
+      } else {
+        audio.play();
+      }
+
       currentAudio = audio;
     }
 
-    function stopAllSounds() {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-      }
+    function startChaosMode() {
+      if (chaosActive) return;
+      chaosActive = true;
+      
+      document.body.style.backgroundImage = `url('${backgroundImage}')`;
+      document.body.style.backgroundSize = 'cover';
+
+      const alarm = new Audio(alarmSound);
+      alarm.loop = true;
+      alarm.volume = 1.0;
+      alarm.play();
+
+      chaosInterval = setInterval(() => {
+        const span = document.createElement("span");
+        span.textContent = chaosWord;
+        span.style.position = "absolute";
+        span.style.left = Math.random() * window.innerWidth + "px";
+        span.style.top = Math.random() * window.innerHeight + "px";
+        span.style.color = "red";
+        span.style.fontWeight = "bold";
+        span.style.fontSize = "2rem";
+        span.style.opacity = 0.8;
+        document.body.appendChild(span);
+      }, 200); // spam rate
     }
 
-    function changeVolume(volume) {
-      if (currentAudio) {
-        currentAudio.volume = volume;
-      }
-    }
+    function stopChaosMode() {
+      if (!chaosActive) return;
+      chaosActive = false;
 
-    function startChaos(remote=false) {
-      if (isChaosActive) return;
-      isChaosActive = true;
-      isRemoteChaos = remote;
-      document.body.style.backgroundImage = `url('${chaosBackground}')`;
-      alarmSound.play();
-      chaosInterval = setInterval(spawnText, 100);
-    }
-
-    function manualChaos() {
-      startChaos(false);
-    }
-
-    function stopChaos() {
-      if (isRemoteChaos) return; // Can't stop remote chaos
-      if (!isChaosActive) return;
-      alarmSound.pause();
-      alarmSound.currentTime = 0;
-      document.body.style.backgroundImage = '';
       clearInterval(chaosInterval);
-      isChaosActive = false;
+      document.body.style.backgroundImage = '';
+      document.querySelectorAll('span').forEach(span => span.remove());
     }
 
-    function spawnText() {
-      const text = document.createElement('div');
-      text.className = 'chaos-text';
-      text.innerText = customWord;
-      text.style.left = Math.random() * window.innerWidth + 'px';
-      text.style.top = Math.random() * window.innerHeight + 'px';
-      document.body.appendChild(text);
-      setTimeout(() => {
-        text.remove();
-      }, 10000);
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === "'") {
-        manualChaos();
-      }
-      if (e.key === "\\") {
-        stopChaos();
-      }
-    });
-
-    async function checkRemoteChaos() {
+    async function checkChaosJson() {
       try {
-        const response = await fetch('chaos.json');
+        const response = await fetch('./chaos.json?t=' + new Date().getTime());
         const data = await response.json();
         if (data.chaos) {
-          startChaos(true);
+          startChaosMode();
+        } else {
+          stopChaosMode();
         }
       } catch (err) {
-        console.error("Could not load chaos.json", err);
+        console.error("Error fetching chaos.json:", err);
       }
     }
 
-    window.onload = function () {
-      checkRemoteChaos();
-    };
+    setInterval(checkChaosJson, 5000); // check every 5 sec
+    window.onload = checkChaosJson;
   </script>
 </body>
 </html>
