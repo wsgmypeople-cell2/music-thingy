@@ -1,4 +1,4 @@
 {
-  "chaos": false,
-  "delay": 0
+  "chaos": true,
+  "delay": 1
 }
